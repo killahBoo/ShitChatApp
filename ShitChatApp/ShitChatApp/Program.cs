@@ -1,11 +1,21 @@
 using ShitChatApp.Client.Pages;
 using ShitChatApp.Components;
+using ShitChatApp.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
 	.AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddSignalR();
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+	options.ListenAnyIP(7093, listenopt => {
+		listenopt.UseHttps();
+	});
+});
 
 var app = builder.Build();
 
@@ -25,6 +35,8 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+app.MapHub<ChatHub>("/chathub");
 
 app.MapRazorComponents<App>()
 	.AddInteractiveWebAssemblyRenderMode()
