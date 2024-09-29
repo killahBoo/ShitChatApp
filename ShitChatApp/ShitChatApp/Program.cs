@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using ShitChatApp.Client.Pages;
 using ShitChatApp.Components;
+using ShitChatApp.Data;
 using ShitChatApp.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,8 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
 	.AddInteractiveWebAssemblyComponents();
 
+//SignalR
 builder.Services.AddSignalR();
 
+//DbContext
+builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ChatDB")));
+
+//Kestrel, enforce HTTPS
 builder.WebHost.ConfigureKestrel(options =>
 {
 	options.ListenAnyIP(7093, listenopt => {
