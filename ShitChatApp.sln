@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShitChatApp", "ShitChatApp\ShitChatApp\ShitChatApp.csproj", "{AC0369D7-61C5-454D-9CCB-A2BCCE54170D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShitChatApp", "ShitChatApp\ShitChatApp\ShitChatApp.csproj", "{AC0369D7-61C5-454D-9CCB-A2BCCE54170D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShitChatApp.Client", "ShitChatApp\ShitChatApp.Client\ShitChatApp.Client.csproj", "{A6FF3A74-971A-4AE3-95DF-1EC493B195F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShitChatApp.Client", "ShitChatApp\ShitChatApp.Client\ShitChatApp.Client.csproj", "{A6FF3A74-971A-4AE3-95DF-1EC493B195F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShitChatApp.Shared", "ShitChatApp.Shared\ShitChatApp.Shared.csproj", "{0BBEB2B3-0305-4EE2-AFA6-52FCE590EC71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{A6FF3A74-971A-4AE3-95DF-1EC493B195F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6FF3A74-971A-4AE3-95DF-1EC493B195F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6FF3A74-971A-4AE3-95DF-1EC493B195F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BBEB2B3-0305-4EE2-AFA6-52FCE590EC71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BBEB2B3-0305-4EE2-AFA6-52FCE590EC71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BBEB2B3-0305-4EE2-AFA6-52FCE590EC71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BBEB2B3-0305-4EE2-AFA6-52FCE590EC71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
