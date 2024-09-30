@@ -1,0 +1,75 @@
+﻿@page "/createjoinroom"
+@using ShitChatApp.Shared.Entities
+@inject NavigationManager NavigationManager
+@rendermode InteractiveWebAssembly
+
+<h3>Hello @userName</h3>
+<p>Create or join a chat room</p>
+<br />
+
+<input @bind="newRoomName" placeholder="Room name" />
+<input @bind="roomCode" placeholder="Enter a 4 digit room code" />
+<button @onclick="CreateNewRoom">Create Room</button>
+
+<h3>Rooms:</h3>
+<ul>
+	@foreach (var room in rooms)
+	{
+		<li>@room.RoomName 
+			<input @bind="@room.RoomCode" placeholder="Room code"/>
+			<button @onclick="() => JoinRoom(room.ChatRoomID, room.RoomCode)">Join Room</button>
+		</li>
+	}
+</ul>
+
+@if (chatRoom is not null)
+{
+	<CascadingValue Value="hubConnection">
+		<Room CurrentRoom="chatRoom"></Room>
+	</CascadingValue>
+}
+
+@code {
+	private HubConnection hubConnection;
+	private string userName = string.Empty;
+	private string newRoomName;
+	private int roomCode;
+	//private ChatRoom? newRoom;
+	private ChatRoom? chatRoom;
+	private List<ChatRoom> rooms = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		hubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/chathub")).Build();
+
+		hubConnection.On<List<ChatRoom>>("GetRooms", (roomList) =>
+		{
+			rooms = roomList;
+			InvokeAsync(StateHasChanged);
+		});
+
+	}
+
+	private async Task CreateNewRoom()
+	{
+		if (hubConnection is null) return;
+
+		chatRoom = await hubConnection.InvokeAsync<ChatRoom>("CreateNewRoom", newRoomName, roomCode);
+	}
+
+	private async Task JoinRoom(string roomId, int roomCode)
+	{
+		if (hubConnection is null) return;
+
+		var reqRoom = rooms.SingleOrDefault(r => r.ChatRoomID == roomId);
+		if (reqRoom is not null && reqRoom.RoomCode == roomCode)
+		{
+			var joinedRoom = await hubConnection.InvokeAsync<ChatRoom>("JoinRoom", reqRoom.ChatRoomID, userName);
+
+			if (joinedRoom is not null)
+			{
+				chatRoom = joinedRoom;
+			}
+		}
+	}
+}
