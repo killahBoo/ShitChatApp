@@ -1,0 +1,69 @@
+﻿@using System.Text.Encodings.Web
+
+@if (CurrentRoom is not null)
+{
+	<h3>@CurrentRoom.RoomName</h3>
+
+	if (CurrentRoom.Users.Count < 2)
+	{
+		<h4>Waiting for another user to join the room...</h4>
+	}
+	else
+	{
+		<p>@user.UserName:</p>
+		<div class="form-group">
+			<label for="message">Message</label>
+			<input type="text" class="form-control" id="message" placeholder="Type a message..." @bind="messageInput">
+		</div>
+		<br />
+		@if (messageInput is not null)
+		{
+			<button @onclick="Send" class="btn btn-primary">Send</button>
+		}
+		else
+		{
+			<button class="btn btn-primary" disabled>Send</button>
+			<p>Type a message</p>
+		}
+
+		//<input type="text" placeholder="Your name" @bind="userName" class="form-control" />
+		//<input type="text" placeholder="Type your message..." @bind="messageInput" class="form-control" />
+
+		<br />
+		<ul id="messagesList">
+			@foreach (var message in messages)
+			{
+				<li>@message</li>
+			}
+		</ul>
+	}
+}
+
+@code {
+	private User user;
+	[CascadingParameter]
+	public HubConnection? hubConnection { get; set; }
+	[Parameter]
+	public ChatRoom? CurrentRoom { get; set; }
+	private string messageInput;
+	private List<string> messages = new List<string>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		if (CurrentRoom is null || hubConnection is null || hubConnection.ConnectionId is null) return;
+
+		//user = hur får jag ut user från min connection?... Gör om userId till string/guid? Hämta sen user från userRepo via id?
+
+		hubConnection.On<string, string>("RecieveMessage", (user, message) =>
+		{
+			//gör en metod av detta istället?
+			var encodedUser = HtmlEncoder.Default.Encode(user);
+			var encodedMessage = HtmlEncoder.Default.Encode(message);
+			var encodedMsg = $"{encodedUser}: {encodedMessage}";
+			messages.Add(encodedMsg);
+			InvokeAsync(StateHasChanged);
+		});
+	}
+
+	Task Send() => hubConnection.SendAsync("SendMessage", user.UserName, messageInput);
+}

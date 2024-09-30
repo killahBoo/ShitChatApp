@@ -8,11 +8,17 @@ namespace ShitChatApp.Shared.Entities
 {
 	public class ChatRoom
 	{
-        public int ChatRoomID { get; set; }
-        public required string RoomName { get; set; }
+        public string ChatRoomID { get; set; }
+        public string RoomName { get; set; }
         public int RoomCode { get; set; }
 
         public ICollection<User> Users { get; set; } = new List<User>();
         public ICollection<Message> Messages { get; set; } = new List<Message>();
-    }
+
+		public ChatRoom( string roomName, int roomCode)
+		{ 
+			RoomName = roomName;
+			RoomCode = roomCode;
+		}
+	}
 }

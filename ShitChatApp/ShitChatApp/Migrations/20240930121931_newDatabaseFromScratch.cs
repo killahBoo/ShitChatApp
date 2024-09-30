@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ShitChatApp.Migrations
 {
     /// <inheritdoc />
-    public partial class initialmig : Migration
+    public partial class newDatabaseFromScratch : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,8 +15,7 @@ namespace ShitChatApp.Migrations
                 name: "ChatRooms",
                 columns: table => new
                 {
-                    ChatRoomID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ChatRoomID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     RoomName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RoomCode = table.Column<int>(type: "int", nullable: false)
                 },
@@ -43,7 +42,7 @@ namespace ShitChatApp.Migrations
                 name: "ChatRoomUser",
                 columns: table => new
                 {
-                    ChatRoomsChatRoomID = table.Column<int>(type: "int", nullable: false),
+                    ChatRoomsChatRoomID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UsersUserID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -69,7 +68,7 @@ namespace ShitChatApp.Migrations
                 {
                     MessageID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ChatRoomID = table.Column<int>(type: "int", nullable: false),
+                    ChatRoomID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserID = table.Column<int>(type: "int", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SentAt = table.Column<DateTime>(type: "datetime2", nullable: false)

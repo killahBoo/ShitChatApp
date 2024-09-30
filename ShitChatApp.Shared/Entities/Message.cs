@@ -10,9 +10,9 @@ namespace ShitChatApp.Shared.Entities
 	public class Message
 	{
         public int MessageID { get; set; }
-        public int ChatRoomID { get; set; }
+        public string ChatRoomID { get; set; }
         public int UserID { get; set; }
-        public required string Content { get; set; }
+        public string Content { get; set; }
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
         public ChatRoom ChatRoom { get; set; }

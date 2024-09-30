@@ -24,8 +24,8 @@ namespace ShitChatApp.Migrations
 
             modelBuilder.Entity("ChatRoomUser", b =>
                 {
-                    b.Property<int>("ChatRoomsChatRoomID")
-                        .HasColumnType("int");
+                    b.Property<string>("ChatRoomsChatRoomID")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("UsersUserID")
                         .HasColumnType("int");
@@ -39,11 +39,8 @@ namespace ShitChatApp.Migrations
 
             modelBuilder.Entity("ShitChatApp.Shared.Entities.ChatRoom", b =>
                 {
-                    b.Property<int>("ChatRoomID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ChatRoomID"));
+                    b.Property<string>("ChatRoomID")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("RoomCode")
                         .HasColumnType("int");
@@ -65,8 +62,9 @@ namespace ShitChatApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MessageID"));
 
-                    b.Property<int>("ChatRoomID")
-                        .HasColumnType("int");
+                    b.Property<string>("ChatRoomID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Content")
                         .IsRequired()
