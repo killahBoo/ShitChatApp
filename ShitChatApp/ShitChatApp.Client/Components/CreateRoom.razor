@@ -1,6 +1,7 @@
 ﻿@page "/createjoinroom"
 @using ShitChatApp.Shared.Entities
 @inject NavigationManager NavigationManager
+@inject IAuthService authService
 @rendermode InteractiveWebAssembly
 
 <h3>Hello @userName</h3>
@@ -30,8 +31,8 @@
 }
 
 @code {
-	private HubConnection hubConnection;
-	private string userName = string.Empty;
+	public HubConnection? hubConnection { get; set; }
+	private string userName;
 	private string newRoomName;
 	private int roomCode;
 	//private ChatRoom? newRoom;
@@ -40,6 +41,9 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+		var token = authService.GetToken();
+		if (token is null) return;
+
 		hubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/chathub")).Build();
 
 		hubConnection.On<List<ChatRoom>>("GetRooms", (roomList) =>
@@ -48,6 +52,7 @@
 			InvokeAsync(StateHasChanged);
 		});
 
+		await hubConnection.StartAsync();
 	}
 
 	private async Task CreateNewRoom()

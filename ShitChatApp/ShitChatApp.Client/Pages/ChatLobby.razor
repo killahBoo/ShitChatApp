@@ -1,73 +1,54 @@
 ﻿@page "/"
-@using System.Text.Encodings.Web
 @inject NavigationManager NavigationManager
+@inject IAuthService authService
 @rendermode InteractiveWebAssembly
 
 <!--Welcome page-->
 
 <h3>Welcome to the 💩-Chat!</h3>
 <h5>Where you can share your worst toughts with the best of friends.</h5>
-<p>Sign in or sign up below to start chatting.</p>
+<p>Login to start chatting.</p>
 
-@if (isConnected)
-{
-	//GÖR OM TILL LOGIN/SIGNUP-SIDA
 		<div class="form-group">
 			<label for="username">Username</label>
-			<input type="text" class="form-control" id="username" placeholder="Your name" @bind="userName">
+			<input type="text" class="form-control" id="username" placeholder="Enter your username" @bind="userName">
 		</div>
 		<div class="form-group">
-			<label for="message">Message</label>
-			<input type="text" class="form-control" id="message" placeholder="Type a message..." @bind="messageInput">
+			<label for="password">Password</label>
+			<input type="password" class="form-control" id="password" placeholder="Enter your password" @bind="password">
 		</div>
 		<br />
-		@if(userName is not null && messageInput is not null)
+		@if(userName is not null && password is not null)
 		{
-		//<button @onclick="" class="btn btn-primary">Send</button>
+		<button @onclick="() => Login(userName, password)" class="btn btn-primary">Login</button>
 		}
 		else
 		{
-		<button class="btn btn-primary" disabled>Send</button>
-		<p>Fill in name and message</p>
+		<button class="btn btn-primary" disabled>Login</button>
+		<p>Enter your usernamne and password</p>
 		}
 	
 	<br />
-	<ul id="messagesList">
-		@foreach(var message in messages)
-		{
-			<li>@message</li>
-		}
-	</ul>
+	<p>Not a member? <a href="/signup">Sign up here</a></p>
 
-}
-else
+
+@if (userIsLoggedIn)
 {
-	<span>Connecting...</span>
+	NavigationManager.NavigateTo("/createjoinroom");
+	//<CreateRoom LoggedInUser="loggedInUser"></CreateRoom>
 }
 
 @code {
-	private HubConnection hubConnection;
-	private List<string> messages = new List<string>();
-	private string userName;
-	private string messageInput;
+	private string? userName;
+	private string? password;
+	private User? loggedInUser;
+	private bool userIsLoggedIn = false;
+	private bool isConnected = true;
 
-	protected override async Task OnInitializedAsync()
+	public async Task Login(string userName, string password)
 	{
-		hubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/chathub")).Build();
-
-		//gör om nedan till inlogg/signup-funktionalitet
-		hubConnection.On<string, string>("RecieveMessage", (user, message) =>
-		{
-			//gör en metod av detta istället?
-			var encodedUser = HtmlEncoder.Default.Encode(user);
-			var encodedMessage = HtmlEncoder.Default.Encode(message);
-			var encodedMsg = $"{encodedUser}: {encodedMessage}";
-			messages.Add(encodedMsg);
-			InvokeAsync(StateHasChanged);
-		});
-
-		await hubConnection.StartAsync();
+		userIsLoggedIn = await authService.SignIn(userName, password);
 	}
 
-	public bool isConnected => hubConnection.State == HubConnectionState.Connected;
+	//public bool isConnected => hubConnection.State == HubConnectionState.Connected;
 }

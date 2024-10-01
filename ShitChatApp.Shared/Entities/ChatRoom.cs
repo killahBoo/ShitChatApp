@@ -15,8 +15,11 @@ namespace ShitChatApp.Shared.Entities
         public ICollection<User> Users { get; set; } = new List<User>();
         public ICollection<Message> Messages { get; set; } = new List<Message>();
 
-		public ChatRoom( string roomName, int roomCode)
+		public ChatRoom() { }
+
+		public ChatRoom(string roomId, string roomName, int roomCode)
 		{ 
+			ChatRoomID = roomId;
 			RoomName = roomName;
 			RoomCode = roomCode;
 		}
