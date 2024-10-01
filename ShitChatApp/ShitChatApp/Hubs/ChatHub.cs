@@ -30,7 +30,7 @@ namespace ShitChatApp.Hubs
 		{
 			//skapar och lägger till nytt rum i databasen
 			var roomId = Guid.NewGuid().ToString();
-			var newRoom = new ChatRoom( roomName, roomCode);
+			var newRoom = new ChatRoom(roomId, roomName, roomCode);
 			await _roomRepo.CreateRoom(newRoom);
 
 			//lägger till inloggad user till rummet(?)

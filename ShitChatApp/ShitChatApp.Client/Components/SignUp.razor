@@ -1,0 +1,43 @@
+﻿@page "/signup"
+@inject NavigationManager NavigationManager
+@inject IAuthService authService
+@rendermode InteractiveWebAssembly
+
+<h3>Sign Up</h3>
+
+<div class="form-group">
+	<label for="username">Username</label>
+	<input type="text" class="form-control" id="username" placeholder="Enter a username" @bind="userName">
+</div>
+<div class="form-group">
+	<label for="password">Password</label>
+	<input type="password" class="form-control" id="password" placeholder="Enter a password" @bind="password">
+</div>
+<br />
+@if (userName is not null && password is not null)
+{
+	<button @onclick="() => CreateNewUser(userName, password)" class="btn btn-primary">Sign up</button>
+}
+else
+{
+	<button class="btn btn-primary" disabled>Create account</button>
+	<p>Enter a usernamne and a password</p>
+}
+
+@if (userCreated)
+{
+	<p>Account created!</p>
+	<a href="/" >Log in</a>
+}
+
+@code {
+	private string? userName;
+	private string? password;
+	private bool userCreated = false;
+
+	public async Task CreateNewUser(string userName, string password)
+	{
+		userCreated = await authService.SignUp(userName, password);
+	}
+
+}

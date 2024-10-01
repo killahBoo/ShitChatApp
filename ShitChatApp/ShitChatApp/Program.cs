@@ -1,8 +1,14 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ShitChatApp.Client.Pages;
+using ShitChatApp.Client.Services;
 using ShitChatApp.Components;
 using ShitChatApp.Data;
 using ShitChatApp.Hubs;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Blazored.SessionStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +18,11 @@ builder.Services.AddRazorComponents()
 
 //SignalR
 builder.Services.AddSignalR();
+
+builder.Services.AddControllers();
+
+//Session storage
+builder.Services.AddBlazoredSessionStorage();
 
 //DbContext
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ChatDB")));
@@ -23,6 +34,38 @@ builder.WebHost.ConfigureKestrel(options =>
 		listenopt.UseHttps();
 	});
 });
+
+builder.Services.AddScoped<RoomRepo>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddHttpClient();
+
+builder.Services.AddControllers();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => 
+	{
+		options.TokenValidationParameters = new TokenValidationParameters
+		{
+			ValidateIssuer = false,
+			ValidateAudience = false,
+			ValidateLifetime = true,
+			ValidateIssuerSigningKey = true,
+			IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("mysecretKey12345!#123456789101112"))
+		};
+		options.Events = new JwtBearerEvents
+		{
+			OnMessageReceived = context =>
+			{
+				var accessToken = context.Request.Query["access_token"];
+
+				if (!string.IsNullOrEmpty(accessToken) && context.HttpContext.Request.Path.StartsWithSegments("/chathub"))
+				{
+					context.Token = accessToken;
+				}
+				return Task.CompletedTask;
+			}
+		};
+	});
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -42,8 +85,11 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapHub<ChatHub>("/chathub");
+app.MapControllers();
 
 app.MapRazorComponents<App>()
 	.AddInteractiveWebAssemblyRenderMode()
