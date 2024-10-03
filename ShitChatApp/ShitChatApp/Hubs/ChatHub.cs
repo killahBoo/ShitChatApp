@@ -14,17 +14,24 @@ namespace ShitChatApp.Hubs
 			_roomRepo = repo;
 		}
 
+		public override async Task OnConnectedAsync()
+		{
+			roomList = await _roomRepo.GetRooms();
+			Console.WriteLine("Rooms: " + roomList.Count);
+			await Clients.Caller.SendAsync("GetRooms", roomList);
+		}
+
 		public async Task SendMessage(string user, string message)
 		{
 			await Clients.All.SendAsync("RecieveMessage", user, message);
 		}
 
-		public async Task GetRooms()
-		{
-			//hämtar alla rum när man kommer till CreateRoom.razor
-			roomList = await _roomRepo.GetRooms();
-			await Clients.Caller.SendAsync("GetRooms", roomList);
-		}
+		//public async Task GetRooms()
+		//{
+		//	//hämtar alla rum när man kommer till CreateRoom.razor
+		//	roomList = await _roomRepo.GetRooms();
+		//	await Clients.Caller.SendAsync("GetRooms", roomList);
+		//}
 
 		public async Task<ChatRoom> CreateNewRoom(string roomName, int roomCode)
 		{
@@ -32,6 +39,7 @@ namespace ShitChatApp.Hubs
 			var roomId = Guid.NewGuid().ToString();
 			var newRoom = new ChatRoom(roomId, roomName, roomCode);
 			await _roomRepo.CreateRoom(newRoom);
+			roomList = await _roomRepo.GetRooms();
 
 			//lägger till inloggad user till rummet(?)
 			await Groups.AddToGroupAsync(Context.ConnectionId, roomId);
@@ -39,6 +47,13 @@ namespace ShitChatApp.Hubs
 			await Clients.All.SendAsync("GetRooms", roomList);
 
 			return newRoom;
+		}
+
+		public async Task<ChatRoom> JoinRoom(string roomId)
+		{
+			var room = await _roomRepo.FindRoom(roomId);
+			await Groups.AddToGroupAsync(Context.ConnectionId, roomId);
+			return room;
 		}
 	}
 }

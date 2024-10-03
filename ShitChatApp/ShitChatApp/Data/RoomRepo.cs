@@ -17,5 +17,10 @@ namespace ShitChatApp.Data
 		{
 			return await _context.ChatRooms.ToListAsync();
 		}
+
+		public async Task<ChatRoom> FindRoom(string roomId)
+		{
+			return await _context.ChatRooms.SingleOrDefaultAsync(r => r.ChatRoomID == roomId);
+		}
 	}
 }
