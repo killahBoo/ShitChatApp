@@ -42,15 +42,15 @@ namespace ShitChatApp.Controllers
 		}
 
 		[HttpPost("signin")]
-		public async Task<IActionResult> SignIn(string userName, string password)
+		public async Task<IActionResult> SignIn(SignupDTO user)
 		{
-			var user = await _context.Users.FindAsync(userName);
-			if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+			var realUser = _context.Users.SingleOrDefault(u => u.UserName == user.UserName);
+			if (user == null || !BCrypt.Net.BCrypt.Verify(user.Password, realUser.PasswordHash))
 			{
 				return Unauthorized("Invalid login");
 			}
 
-			var token = GenerateJwtToken(user);
+			var token = GenerateJwtToken(realUser);
 			return Ok(token);
 		}
 

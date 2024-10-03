@@ -9,6 +9,7 @@ namespace ShitChatApp.Client.Services
 	{
 		private readonly HttpClient _httpClient;
 		private readonly ISessionStorageService _sessionStorage;
+		
 
 		public AuthService(HttpClient httpClient, ISessionStorageService sessionStorage)
 		{
@@ -18,7 +19,8 @@ namespace ShitChatApp.Client.Services
 
 		public async Task<bool> SignIn(string username, string password)
 		{
-			var response = await _httpClient.PostAsJsonAsync("/api/auth/signin", new { username, password });
+			var userDTO = new SignupDTO { UserName = username, Password = password };
+			var response = await _httpClient.PostAsJsonAsync("api/auth/signin", userDTO);
 			if (response.IsSuccessStatusCode)
 			{
 				var token = await response.Content.ReadAsStringAsync();

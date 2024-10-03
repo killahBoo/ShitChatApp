@@ -52,7 +52,8 @@
 	{
 		if (CurrentRoom is null || hubConnection is null || hubConnection.ConnectionId is null) return;
 
-		//user = hur får jag ut user från min connection?... Gör om userId till string/guid? Hämta sen user från userRepo via id?
+		//user = 
+		// hur får jag ut user från min connection?... Gör om userId till string/guid? Hämta sen user från userRepo via id?
 
 		hubConnection.On<string, string>("RecieveMessage", (user, message) =>
 		{
