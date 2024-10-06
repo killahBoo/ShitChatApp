@@ -1,5 +1,4 @@
 ﻿@page "/createjoinroom"
-@using ShitChatApp.Shared.Entities
 @inject NavigationManager NavigationManager
 @inject IAuthService authService
 @rendermode InteractiveWebAssembly
@@ -29,32 +28,47 @@
 else
 {
 	<CascadingValue Value="hubConnection">
-		<Room CurrentRoom="chatRoom"></Room>
+		<Room CurrentRoom="chatRoom" CurrentUser="loggedInuser"></Room>
 	</CascadingValue>
 }
 
 @code {
 	public HubConnection? hubConnection { get; set; }
-	//private string userName;
+	private User? loggedInuser;
 	private string newRoomName = string.Empty;
 	private string roomCode = string.Empty;
 	private string reqRoomCode = string.Empty;
 	//private ChatRoom? newRoom;
 	private ChatRoom? chatRoom;
 	private List<ChatRoom> rooms = new();
+	[Parameter]
+	public Token? Token { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
-		var token = authService.GetToken();
-		if (token is null) return;
+		//var token = Token.JWTtoken;
+		if (Token is null) return;
 
-		hubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/chathub")).Build();
+		hubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/chathub"), opt =>
+		{
+			opt.AccessTokenProvider = () => Task.FromResult<string?>(Token.JWTtoken);
+		}).Build();
 
-		hubConnection.On<List<ChatRoom>>("GetRooms", (roomList) =>
+		hubConnection.On<List<ChatRoom>, User>("GetRooms", (roomList, user) =>
 		{
 			rooms = roomList;
+			loggedInuser = user;
 			InvokeAsync(StateHasChanged);
 		});
+
+		// hubConnection.On<User>("UserJoined", user =>
+		// {
+		// 	if (chatRoom != null && chatRoom.Users != null)
+		// 	{
+		// 		chatRoom.Users.Add(user);
+		// 		InvokeAsync(StateHasChanged);
+		// 	}
+		// });
 
 		await hubConnection.StartAsync();
 	}
@@ -75,10 +89,11 @@ else
 		var reqRoom = rooms.SingleOrDefault(r => r.ChatRoomID == roomId);
 		if (reqRoom is not null && reqRoom.RoomCode == code)
 		{
-			var joinedRoom = await hubConnection.InvokeAsync<ChatRoom>("JoinRoom", reqRoom.ChatRoomID);
+			var joinedRoom = await hubConnection.InvokeAsync<ChatRoom>("JoinRoom", reqRoom);
 
 			if (joinedRoom is not null)
 			{
+				joinedRoom.Users.Add(loggedInuser);
 				chatRoom = joinedRoom;
 			}
 		}
