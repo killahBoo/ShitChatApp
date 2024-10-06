@@ -10,7 +10,7 @@
 	}
 	else
 	{
-		<p>@user.UserName:</p>
+		<p>@CurrentUser.UserName:</p>
 		<div class="form-group">
 			<label for="message">Message</label>
 			<input type="text" class="form-control" id="message" placeholder="Type a message..." @bind="messageInput">
@@ -18,7 +18,7 @@
 		<br />
 		@if (messageInput is not null)
 		{
-			<button @onclick="Send" class="btn btn-primary">Send</button>
+			<button @onclick="() => SendMessage()" class="btn btn-primary">Send</button>
 		}
 		else
 		{
@@ -33,38 +33,58 @@
 		<ul id="messagesList">
 			@foreach (var message in messages)
 			{
-				<li>@message</li>
+				<li>@message.User.UserName: @message.Content</li>
 			}
 		</ul>
 	}
 }
 
 @code {
-	private User user;
 	[CascadingParameter]
 	public HubConnection? hubConnection { get; set; }
 	[Parameter]
 	public ChatRoom? CurrentRoom { get; set; }
-	private string messageInput;
-	private List<string> messages = new List<string>();
+	private string? messageInput;
+	private List<Message> messages = new();
+	[Parameter] public User CurrentUser { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
-		if (CurrentRoom is null || hubConnection is null || hubConnection.ConnectionId is null) return;
+		if (CurrentRoom is null || hubConnection is null) return;
 
-		//user = 
-		// hur får jag ut user från min connection?... Gör om userId till string/guid? Hämta sen user från userRepo via id?
-
-		hubConnection.On<string, string>("RecieveMessage", (user, message) =>
+		hubConnection.On<User>("UserJoined", (newUser) =>
 		{
-			//gör en metod av detta istället?
-			var encodedUser = HtmlEncoder.Default.Encode(user);
-			var encodedMessage = HtmlEncoder.Default.Encode(message);
-			var encodedMsg = $"{encodedUser}: {encodedMessage}";
-			messages.Add(encodedMsg);
+			if(CurrentRoom.Users.All(u => u.UserName != newUser.UserName))
+			{
+				CurrentRoom.Users.Add(newUser);
+				Console.WriteLine("On client, users in room: " + CurrentRoom.Users.Count);
+				InvokeAsync(StateHasChanged);
+			}
+
+		});
+
+		hubConnection.On<Message>("RecieveMessage", message =>
+		{
+			messages.Add(message);
 			InvokeAsync(StateHasChanged);
 		});
 	}
 
-	Task Send() => hubConnection.SendAsync("SendMessage", user.UserName, messageInput);
+	// private async Task RecieveMessage()
+	// {
+	// 	// var encodedUser = HtmlEncoder.Default.Encode(user);
+	// 	// var encodedMessage = HtmlEncoder.Default.Encode(message);
+	// 	// var encodedMsg = $"{encodedUser}: {encodedMessage}";
+	// 	//messages.Add(encodedMsg);
+	// 	InvokeAsync(StateHasChanged);
+	// }
+
+	private async Task SendMessage()
+	{
+		if (hubConnection is null) return;
+
+		await hubConnection.SendAsync("SendMessage", CurrentRoom, CurrentUser, messageInput);
+	}
+
+	//Task Send() => hubConnection.SendAsync("SendMessage", CurrentUser.UserName, messageInput);
 }

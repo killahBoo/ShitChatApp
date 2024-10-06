@@ -9,7 +9,7 @@ namespace ShitChatApp.Client.Services
 	{
 		private readonly HttpClient _httpClient;
 		private readonly ISessionStorageService _sessionStorage;
-		
+
 
 		public AuthService(HttpClient httpClient, ISessionStorageService sessionStorage)
 		{
@@ -39,7 +39,8 @@ namespace ShitChatApp.Client.Services
 
 		public async Task<string> GetToken()
 		{
-			return await _sessionStorage.GetItemAsync<string>("jwtToken");
+			var token = await _sessionStorage.GetItemAsync<string>("jwtToken");
+			return token;
 		}
 	}
 }

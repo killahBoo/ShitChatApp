@@ -61,15 +61,15 @@ namespace ShitChatApp.Controllers
 
 			var tokenDescriptor = new SecurityTokenDescriptor
 			{
-				Subject = new ClaimsIdentity(new Claim[] 
-				{
-					new Claim(ClaimTypes.Name, user.UserName)
-				}),
+				Subject = new ClaimsIdentity( 
+				[
+					new(ClaimTypes.Name, user.UserName)
+				]),
 				Expires = DateTime.UtcNow.AddHours(2),
 				SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
 			};
 
-			var token = tokenHandler.CreateToken(tokenDescriptor);
+			var token = tokenHandler.CreateToken(tokenDescriptor) as JwtSecurityToken;
 			return tokenHandler.WriteToken(token);
 		}
 	}

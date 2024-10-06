@@ -9,7 +9,15 @@ namespace ShitChatApp.Shared.Entities
 {
 	public class Message
 	{
-        public int MessageID { get; set; }
+		public Message(string chatRoomID, int userID, string content, DateTime sentAt)
+		{
+			ChatRoomID = chatRoomID;
+			UserID = userID;
+			Content = content;
+			SentAt = sentAt;
+		}
+
+		public int MessageID { get; set; }
         public string ChatRoomID { get; set; }
         public int UserID { get; set; }
         public string Content { get; set; }
@@ -17,5 +25,7 @@ namespace ShitChatApp.Shared.Entities
 
         public ChatRoom ChatRoom { get; set; }
         public User User { get; set; }
+
+
     }
 }

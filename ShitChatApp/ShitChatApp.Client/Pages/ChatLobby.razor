@@ -3,38 +3,40 @@
 @inject IAuthService authService
 @rendermode InteractiveWebAssembly
 
-<!--Welcome page-->
 
-<h3>Welcome to the 💩-Chat!</h3>
-<h5>Where you can share your worst toughts with the best of friends.</h5>
-<p>Login to start chatting.</p>
+@if (!userIsLoggedIn)
+{
+	<!--Welcome page-->
 
-		<div class="form-group">
-			<label for="username">Username</label>
-			<input type="text" class="form-control" id="username" placeholder="Enter your username" @bind="userName">
-		</div>
-		<div class="form-group">
-			<label for="password">Password</label>
-			<input type="password" class="form-control" id="password" placeholder="Enter your password" @bind="password">
-		</div>
-		<br />
-		@if(userName is not null && password is not null)
-		{
+	<h3>Welcome to the 💩-Chat!</h3>
+	<h5>Where you can share your worst toughts with the best of friends.</h5>
+	<p>Login to start chatting.</p>
+
+	<div class="form-group">
+		<label for="username">Username</label>
+		<input type="text" class="form-control" id="username" placeholder="Enter your username" @bind="userName">
+	</div>
+	<div class="form-group">
+		<label for="password">Password</label>
+		<input type="password" class="form-control" id="password" placeholder="Enter your password" @bind="password">
+	</div>
+	<br />
+	@if (userName is not null && password is not null)
+	{
 		<button @onclick="() => Login(userName, password)" class="btn btn-primary">Login</button>
-		}
-		else
-		{
+	}
+	else
+	{
 		<button class="btn btn-primary" disabled>Login</button>
 		<p>Enter your usernamne and password</p>
-		}
-	
+	}
+
 	<br />
 	<p>Not a member? <a href="/signup">Sign up here</a></p>
-
-
-@if (userIsLoggedIn)
+}
+else
 {
-	NavigationManager.NavigateTo("/createjoinroom");
+	<CreateRoom Token="jwt"></CreateRoom>
 }
 
 @code {
@@ -42,12 +44,17 @@
 	private string? password;
 	private User? loggedInUser;
 	private bool userIsLoggedIn = false;
-	private bool isConnected = true;
+	private Token? jwt = new();
+	//private bool isConnected = true;
 
 	public async Task Login(string userName, string password)
 	{
-		userIsLoggedIn = await authService.SignIn(userName, password);
-	}
+		if (await authService.SignIn(userName, password))
+		{
+			jwt.JWTtoken = await authService.GetToken();
+			userIsLoggedIn = true;
+		};
+}
 
 	//public bool isConnected => hubConnection.State == HubConnectionState.Connected;
 }

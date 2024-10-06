@@ -22,5 +22,24 @@ namespace ShitChatApp.Data
 		{
 			return await _context.ChatRooms.SingleOrDefaultAsync(r => r.ChatRoomID == roomId);
 		}
+
+		public async Task<User> GetUser(string username)
+		{
+			return await _context.Users.SingleOrDefaultAsync(u => u.UserName == username);
+		}
+
+		public async Task<ChatRoom> UpdateRoom(ChatRoom updatedRoom)
+		{
+			var oldRoom = await FindRoom(updatedRoom.ChatRoomID);
+			_context.Entry(oldRoom).CurrentValues.SetValues(updatedRoom);
+			await _context.SaveChangesAsync();
+			return updatedRoom;
+		}
+
+		public async Task SaveMessage(Message message)
+		{
+			_context.Messages.Add(message);
+			await _context.SaveChangesAsync();
+		}
 	}
 }
