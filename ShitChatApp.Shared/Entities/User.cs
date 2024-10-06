@@ -14,11 +14,5 @@ namespace ShitChatApp.Shared.Entities
 
         public ICollection<ChatRoom>? ChatRooms { get; set; } = new List<ChatRoom>();
         public ICollection<Message>? Messages { get; set; } = new List<Message>();
-
-		//public User(string userName, string passwordHash)
-		//{
-		//	UserName = userName;
-		//	PasswordHash = passwordHash;
-		//}
 	}
 }

@@ -42,10 +42,8 @@ else
 @code {
 	private string? userName;
 	private string? password;
-	private User? loggedInUser;
 	private bool userIsLoggedIn = false;
 	private Token? jwt = new();
-	//private bool isConnected = true;
 
 	public async Task Login(string userName, string password)
 	{
@@ -54,7 +52,6 @@ else
 			jwt.JWTtoken = await authService.GetToken();
 			userIsLoggedIn = true;
 		};
-}
+	}
 
-	//public bool isConnected => hubConnection.State == HubConnectionState.Connected;
 }
