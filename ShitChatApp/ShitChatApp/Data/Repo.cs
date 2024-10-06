@@ -3,7 +3,7 @@ using ShitChatApp.Shared.Entities;
 
 namespace ShitChatApp.Data
 {
-	public class RoomRepo(DataContext context)
+	public class Repo(DataContext context)
 	{
 		private readonly DataContext _context = context;
 
@@ -20,12 +20,16 @@ namespace ShitChatApp.Data
 
 		public async Task<ChatRoom> FindRoom(string roomId)
 		{
-			return await _context.ChatRooms.SingleOrDefaultAsync(r => r.ChatRoomID == roomId);
+			var room = await _context.ChatRooms.SingleOrDefaultAsync(r => r.ChatRoomID == roomId);
+			if (room is not null) return room;
+			return null;
 		}
 
 		public async Task<User> GetUser(string username)
 		{
-			return await _context.Users.SingleOrDefaultAsync(u => u.UserName == username);
+			var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName == username);
+			if (user is not null) return user;
+			return null;
 		}
 
 		public async Task<ChatRoom> UpdateRoom(ChatRoom updatedRoom)

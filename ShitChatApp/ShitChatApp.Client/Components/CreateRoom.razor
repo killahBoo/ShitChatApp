@@ -38,7 +38,6 @@ else
 	private string newRoomName = string.Empty;
 	private string roomCode = string.Empty;
 	private string reqRoomCode = string.Empty;
-	//private ChatRoom? newRoom;
 	private ChatRoom? chatRoom;
 	private List<ChatRoom> rooms = new();
 	[Parameter]
@@ -46,7 +45,6 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		//var token = Token.JWTtoken;
 		if (Token is null) return;
 
 		hubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/chathub"), opt =>
@@ -60,15 +58,6 @@ else
 			loggedInuser = user;
 			InvokeAsync(StateHasChanged);
 		});
-
-		// hubConnection.On<User>("UserJoined", user =>
-		// {
-		// 	if (chatRoom != null && chatRoom.Users != null)
-		// 	{
-		// 		chatRoom.Users.Add(user);
-		// 		InvokeAsync(StateHasChanged);
-		// 	}
-		// });
 
 		await hubConnection.StartAsync();
 	}

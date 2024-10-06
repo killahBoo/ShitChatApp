@@ -26,9 +26,6 @@
 			<p>Type a message</p>
 		}
 
-		//<input type="text" placeholder="Your name" @bind="userName" class="form-control" />
-		//<input type="text" placeholder="Type your message..." @bind="messageInput" class="form-control" />
-
 		<br />
 		<ul id="messagesList">
 			@foreach (var message in messages)
@@ -70,21 +67,10 @@
 		});
 	}
 
-	// private async Task RecieveMessage()
-	// {
-	// 	// var encodedUser = HtmlEncoder.Default.Encode(user);
-	// 	// var encodedMessage = HtmlEncoder.Default.Encode(message);
-	// 	// var encodedMsg = $"{encodedUser}: {encodedMessage}";
-	// 	//messages.Add(encodedMsg);
-	// 	InvokeAsync(StateHasChanged);
-	// }
-
 	private async Task SendMessage()
 	{
 		if (hubConnection is null) return;
 
 		await hubConnection.SendAsync("SendMessage", CurrentRoom, CurrentUser, messageInput);
 	}
-
-	//Task Send() => hubConnection.SendAsync("SendMessage", CurrentUser.UserName, messageInput);
 }

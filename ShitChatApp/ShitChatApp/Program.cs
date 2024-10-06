@@ -35,7 +35,7 @@ builder.WebHost.ConfigureKestrel(options =>
 	});
 });
 
-builder.Services.AddScoped<RoomRepo>();
+builder.Services.AddScoped<Repo>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddHttpClient();
 

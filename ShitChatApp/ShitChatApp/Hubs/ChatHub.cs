@@ -11,9 +11,9 @@ namespace ShitChatApp.Hubs
 	{
 		private static List<ChatRoom> roomList = new();
 		private User User = new();
-		private readonly RoomRepo _roomRepo;
+		private readonly Repo _roomRepo;
 
-		public ChatHub(RoomRepo repo)
+		public ChatHub(Repo repo)
 		{
 			_roomRepo = repo;
 		}
@@ -33,13 +33,7 @@ namespace ShitChatApp.Hubs
 			await _roomRepo.SaveMessage(newMessage);
 			newMessage.User = user;
 			await Clients.Group(room.ChatRoomID).SendAsync("RecieveMessage", newMessage);
-			//await Clients.All.SendAsync("RecieveMessage", user, message);
 			
-		}
-
-		public async Task StartChat()
-		{
-
 		}
 
 		public async Task<ChatRoom> CreateNewRoom(string roomName, int roomCode)
@@ -62,11 +56,11 @@ namespace ShitChatApp.Hubs
 
 		public async Task<ChatRoom> JoinRoom(ChatRoom reqRoom)
 		{
-			//var room = await _roomRepo.FindRoom(roomId);
 			var user = await GetUser();
 			var room = roomList.SingleOrDefault(r => r.ChatRoomID == reqRoom.ChatRoomID);
 			if (room is not null)
 			{
+				//hämta gamla meddelanden och skicka med
 				room.Users.Add(user);
 				Console.WriteLine("In hub, users in room: " + room.Users.Count);
 				await Groups.AddToGroupAsync(Context.ConnectionId, room.ChatRoomID);
