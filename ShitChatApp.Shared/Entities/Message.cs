@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ShitChatApp.Shared.Entities
@@ -23,7 +24,8 @@ namespace ShitChatApp.Shared.Entities
         public string Content { get; set; }
         public DateTime SentAt { get; set; } = DateTime.UtcNow;
 
-        public ChatRoom ChatRoom { get; set; }
+		[JsonIgnore]
+		public ChatRoom ChatRoom { get; set; }
         public User User { get; set; }
 
 

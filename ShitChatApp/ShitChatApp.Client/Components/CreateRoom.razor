@@ -34,12 +34,12 @@ else
 
 @code {
 	public HubConnection? hubConnection { get; set; }
-	private User? loggedInuser;
+	private UserDTO? loggedInuser;
 	private string newRoomName = string.Empty;
 	private string roomCode = string.Empty;
 	private string reqRoomCode = string.Empty;
-	private ChatRoom? chatRoom;
-	private List<ChatRoom> rooms = new();
+	private ChatRoomDTO? chatRoom;
+	private List<ChatRoomDTO> rooms = new();
 	[Parameter]
 	public Token? Token { get; set; }
 
@@ -52,7 +52,7 @@ else
 			opt.AccessTokenProvider = () => Task.FromResult<string?>(Token.JWTtoken);
 		}).Build();
 
-		hubConnection.On<List<ChatRoom>, User>("GetRooms", (roomList, user) =>
+		hubConnection.On<List<ChatRoomDTO>, UserDTO>("GetRooms", (roomList, user) =>
 		{
 			rooms = roomList;
 			loggedInuser = user;
@@ -67,7 +67,7 @@ else
 		if (hubConnection is null) return;
 
 		int code = int.Parse(roomCode);
-		chatRoom = await hubConnection.InvokeAsync<ChatRoom>("CreateNewRoom", newRoomName, code);
+		chatRoom = await hubConnection.InvokeAsync<ChatRoomDTO>("CreateNewRoom", newRoomName, code);
 	}
 
 	private async Task JoinRoom(string roomId, string reqRoomCode)
@@ -78,7 +78,7 @@ else
 		var reqRoom = rooms.SingleOrDefault(r => r.ChatRoomID == roomId);
 		if (reqRoom is not null && reqRoom.RoomCode == code)
 		{
-			var joinedRoom = await hubConnection.InvokeAsync<ChatRoom>("JoinRoom", reqRoom);
+			var joinedRoom = await hubConnection.InvokeAsync<ChatRoomDTO>("JoinRoom", reqRoom);
 
 			if (joinedRoom is not null)
 			{

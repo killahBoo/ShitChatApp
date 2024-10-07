@@ -9,6 +9,7 @@ using ShitChatApp.Data;
 using ShitChatApp.Hubs;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Blazored.SessionStorage;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,7 @@ builder.Services.AddRazorComponents()
 //SignalR
 builder.Services.AddSignalR();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 //Session storage
 builder.Services.AddBlazoredSessionStorage();
