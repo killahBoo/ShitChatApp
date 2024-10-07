@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ShitChatApp.Client.DTOs;
 using ShitChatApp.Shared.Entities;
 
 namespace ShitChatApp.Data
@@ -13,9 +14,26 @@ namespace ShitChatApp.Data
 			await _context.SaveChangesAsync();
 		}
 
-		public async Task<List<ChatRoom>> GetRooms()
+		public async Task<List<ChatRoomDTO>> GetRooms()
 		{
-			return await _context.ChatRooms.ToListAsync();
+			return await _context.ChatRooms.Select(r => new ChatRoomDTO
+			{
+				ChatRoomID = r.ChatRoomID,
+				RoomName = r.RoomName,
+				RoomCode = r.RoomCode,
+				Messages = r.Messages.Select(m => new MessageDTO
+				{
+					MessageID = m.MessageID,
+					Content = m.Content,
+					SentAt = m.SentAt,
+					UserID = m.UserID
+				}).ToList(),
+				Users = r.Users.Select(u => new UserDTO
+				{
+					UserID = u.UserID,
+					UserName = u.UserName
+				}).ToList(),
+			}).ToListAsync();
 		}
 
 		public async Task<ChatRoom> FindRoom(string roomId)
@@ -25,6 +43,16 @@ namespace ShitChatApp.Data
 			return null;
 		}
 
+		public async Task<UserDTO> GetUserDTO(string username)
+		{
+			var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName == username);
+			if (user is not null)
+			{
+				var userDTO = new UserDTO { UserID = user.UserID, UserName = user.UserName };
+				return userDTO;
+			}
+			return null;
+		}
 		public async Task<User> GetUser(string username)
 		{
 			var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName == username);
@@ -45,5 +73,10 @@ namespace ShitChatApp.Data
 			_context.Messages.Add(message);
 			await _context.SaveChangesAsync();
 		}
+
+		//public async Task<List<Message>> GetMessages(string roomId)
+		//{
+		//	return await _context.Messages.Where(m => m.ChatRoomID == roomId).ToListAsync();
+		//}
 	}
 }
