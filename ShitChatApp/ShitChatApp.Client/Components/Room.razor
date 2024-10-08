@@ -66,6 +66,8 @@
 
 		hubConnection.On<MessageDTO>("RecieveMessage", message =>
 		{
+			message.UserName = HtmlEncoder.Default.Encode(message.UserName);
+			message.Content = HtmlEncoder.Default.Encode(message.Content);
 			messages.Add(message);
 			InvokeAsync(StateHasChanged);
 		});

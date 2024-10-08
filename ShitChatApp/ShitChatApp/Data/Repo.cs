@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShitChatApp.Client.DTOs;
+using ShitChatApp.Helpers;
 using ShitChatApp.Shared.Entities;
 
 namespace ShitChatApp.Data
@@ -16,7 +17,7 @@ namespace ShitChatApp.Data
 
 		public async Task<List<ChatRoomDTO>> GetRooms()
 		{
-			return await _context.ChatRooms.Select(r => new ChatRoomDTO
+			var roomList = await _context.ChatRooms.Select(r => new ChatRoomDTO
 			{
 				ChatRoomID = r.ChatRoomID,
 				RoomName = r.RoomName,
@@ -34,6 +35,24 @@ namespace ShitChatApp.Data
 					UserName = u.UserName
 				}).ToList(),
 			}).ToListAsync();
+
+			foreach (var room in roomList) 
+			{
+				foreach (var message in room.Messages)
+				{
+					if (IsBase64String(message.Content))
+					{
+						message.Content = EncryptionHelper.Decrypt(message.Content);
+					}
+				}
+			}
+			return roomList;
+		}
+
+		private bool IsBase64String(string base64)
+		{
+			Span<byte> buffer = new Span<byte>(new byte[base64.Length]);
+			return base64.Length % 4 == 0 && Convert.TryFromBase64String(base64, buffer, out _);
 		}
 
 		public async Task<ChatRoom> FindRoom(string roomId)
