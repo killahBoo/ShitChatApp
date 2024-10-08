@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using ShitChatApp.Client.DTOs;
 using ShitChatApp.Data;
+using ShitChatApp.Helpers;
 using ShitChatApp.Shared.Entities;
 
 namespace ShitChatApp.Hubs
@@ -30,7 +31,8 @@ namespace ShitChatApp.Hubs
 		public async Task SendMessage(ChatRoomDTO room, UserDTO user, string message)
 		{
 			//skapar nytt meddelande och sparar i databasen
-			var newMessage = new Message(room.ChatRoomID, user.UserID, message, DateTime.UtcNow);
+			var encryptedMessage = EncryptionHelper.Encrypt(message);
+			var newMessage = new Message(room.ChatRoomID, user.UserID, encryptedMessage, DateTime.UtcNow);
 			await _roomRepo.SaveMessage(newMessage);
 			//newMessage.User = user; behövs ej?
 			var dtoMessage = new MessageDTO { Content = message, SentAt = DateTime.UtcNow, UserName = user.UserName };
