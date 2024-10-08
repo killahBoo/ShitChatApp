@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Serilog;
 using ShitChatApp.Client.DTOs;
 using ShitChatApp.Data;
 using ShitChatApp.Helpers;
@@ -22,8 +23,8 @@ namespace ShitChatApp.Hubs
 
 		public override async Task OnConnectedAsync()
 		{
+			Log.Information("Starting connection...");
 			roomList = await _roomRepo.GetRooms();
-			Console.WriteLine("Rooms: " + roomList.Count);
 			User = await GetUserDTO();
 			await Clients.Caller.SendAsync("GetRooms", roomList, User);
 		}

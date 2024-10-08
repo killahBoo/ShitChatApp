@@ -5,7 +5,11 @@
 
 @if (chatRoom is null)
 {
-	<h3>Hello!</h3>
+	if (loggedInuser is not null)
+	{
+		<h3>Hello @loggedInuser.UserName!</h3>
+	}
+	
 	<p>Create or join a chat room</p>
 	<br />
 
