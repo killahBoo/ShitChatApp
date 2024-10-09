@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShitChatApp.Client", "ShitC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShitChatApp.Shared", "ShitChatApp.Shared\ShitChatApp.Shared.csproj", "{0BBEB2B3-0305-4EE2-AFA6-52FCE590EC71}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShitChatApp.Tests", "ShitChatApp.Tests\ShitChatApp.Tests.csproj", "{F232632A-BEEE-499E-9EBC-FAC93B0A6817}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{0BBEB2B3-0305-4EE2-AFA6-52FCE590EC71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BBEB2B3-0305-4EE2-AFA6-52FCE590EC71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0BBEB2B3-0305-4EE2-AFA6-52FCE590EC71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F232632A-BEEE-499E-9EBC-FAC93B0A6817}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F232632A-BEEE-499E-9EBC-FAC93B0A6817}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F232632A-BEEE-499E-9EBC-FAC93B0A6817}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F232632A-BEEE-499E-9EBC-FAC93B0A6817}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

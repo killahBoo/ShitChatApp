@@ -10,7 +10,7 @@ namespace ShitChatApp.Data
 	{
 		private readonly DataContext _context = context;
 
-		public async Task CreateRoom(ChatRoom newRoom)
+        public async Task CreateRoom(ChatRoom newRoom)
 		{
 			try
 			{
@@ -66,7 +66,7 @@ namespace ShitChatApp.Data
 			}
 		}
 
-		private bool IsBase64String(string base64)
+		public bool IsBase64String(string base64)
 		{
 			try
 			{

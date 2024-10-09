@@ -35,7 +35,6 @@ namespace ShitChatApp.Hubs
 			var encryptedMessage = EncryptionHelper.Encrypt(message);
 			var newMessage = new Message(room.ChatRoomID, user.UserID, encryptedMessage, DateTime.UtcNow);
 			await _roomRepo.SaveMessage(newMessage);
-			//newMessage.User = user; behövs ej?
 			var dtoMessage = new MessageDTO { Content = message, SentAt = DateTime.UtcNow, UserName = user.UserName };
 			await Clients.Group(room.ChatRoomID).SendAsync("RecieveMessage", dtoMessage);
 			
@@ -53,7 +52,7 @@ namespace ShitChatApp.Hubs
 
 			//lägger till inloggad user till rummet(?)
 			await Groups.AddToGroupAsync(Context.ConnectionId, roomId);
-			//skickar rum-lista till alla clients(?)
+			//skickar ny rum-lista till alla clients(?)
 			await Clients.All.SendAsync("GetRooms", roomList);
 
 			return roomList.SingleOrDefault(r => r.ChatRoomID == roomId);
@@ -63,12 +62,8 @@ namespace ShitChatApp.Hubs
 		{
 			var user = await GetUserDTO();
 			var room = roomList.SingleOrDefault(r => r.ChatRoomID == reqRoom.ChatRoomID);
-				//await _roomRepo.FindRoom(reqRoom.ChatRoomID);
 			if (room is not null)
 			{
-				//hämta gamla meddelanden och skicka med : de är med från början nu? Finns i roomList?
-				//room.Messages = (ICollection<Message>)roomList.SingleOrDefault(r => r.ChatRoomID == room.ChatRoomID).Messages;
-				room.Users.Add(user); //user behöver inte adderas här?
 				await Groups.AddToGroupAsync(Context.ConnectionId, room.ChatRoomID);
 				await Clients.Group(room.ChatRoomID).SendAsync("UserJoined", user);
 				return room;
